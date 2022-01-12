@@ -298,6 +298,7 @@ class DRQNAgent():
         def transforms(img, to_grayscale=False):
             img = T.Resize(self.state_space)(img)
             # Can not normalize if storing as int8
+            # Still works with though but I imagine with lose a lot of info
             #TODO
             #img = T.ToPILImage()(img)
             #img = T.ToTensor()(img)
