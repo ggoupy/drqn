@@ -297,13 +297,15 @@ class DRQNAgent():
         # ToTensor -> T.ToPILImage is Trick to normalize between 0 & 1
         def transforms(img, to_grayscale=False):
             img = T.Resize(self.state_space)(img)
-            img = T.ToPILImage()(img)
-            img = T.ToTensor()(img)
-            if img.shape[0] == 3: # For colored images
-                img = T.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))(img)
-            else: # Else compute it
-                mean, std = img.mean([1,2]), img.std([1,2])
-                img = T.Normalize(mean,std)(img)
+            # Can not normalize if storing as int8
+            #TODO
+            #img = T.ToPILImage()(img)
+            #img = T.ToTensor()(img)
+            #if img.shape[0] == 3: # For colored images
+            #    img = T.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))(img)
+            #else: # Else compute it
+            #    mean, std = img.mean([1,2]), img.std([1,2])
+            #    img = T.Normalize(mean,std)(img)
             if to_grayscale:
                 img = T.Grayscale()(img)
             return img.to(self.device)
