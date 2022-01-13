@@ -297,7 +297,7 @@ class DRQNAgent():
         # ToTensor -> T.ToPILImage is Trick to normalize between 0 & 1
         def transforms(img, to_grayscale=False):
             img = T.Resize(self.state_space)(img)
-            # Can not normalize if storing as int8
+            # Can not normalize if storing as uint8
             # Still works with though but I imagine with lose a lot of info
             #TODO
             #img = T.ToPILImage()(img)
@@ -316,8 +316,8 @@ class DRQNAgent():
         # Concat channels
         input_state = torch.cat((input_state_tr,input_state_depth), dim=0)
         # Add one dimension for batch & seq -> (batch, seq, channels, height, width)
-        # Convert it to int8 to reduce memory usage
-        input_state = input_state.unsqueeze(0).unsqueeze(0).to(torch.int8)
+        # Convert it to uint8 to reduce memory usage
+        input_state = input_state.unsqueeze(0).unsqueeze(0).to(torch.uint8)
         return input_state
 
 
@@ -365,10 +365,10 @@ class DRQNAgent():
             next_states.append(torch.cat(samples[i]["next_state"],dim=1))
             dones.append(samples[i]["done"])
         in_shape = (self.batch_size,seq_len) + (states[0].shape[2:])
-        states = torch.CharTensor(torch.cat(states).view(in_shape)).to(self.device) #int8
+        states = torch.ByteTensor(torch.cat(states).view(in_shape)).to(self.device) #iunt8
         actions = torch.LongTensor(np.array(actions).reshape(self.batch_size,seq_len,-1)).to(self.device)
         rewards = torch.FloatTensor(np.array(rewards).reshape(self.batch_size,seq_len,-1)).to(self.device)
-        next_states = torch.CharTensor(torch.cat(next_states).view(in_shape)).to(self.device) #int8
+        next_states = torch.ByteTensor(torch.cat(next_states).view(in_shape)).to(self.device) #uint8
         dones = torch.FloatTensor(np.array(dones).reshape(self.batch_size,seq_len,-1)).to(self.device)
         
         # Compute Q-values and keep the ones associated to the stored actions
